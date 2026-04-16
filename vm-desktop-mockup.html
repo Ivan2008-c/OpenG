@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VM Desktop Interface Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .desktop {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Panel */
+        .top-panel {
+            height: 32px;
+            background: rgba(30, 30, 30, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .panel-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .power-button {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .power-button:hover {
+            opacity: 0.8;
+        }
+
+        .power-button svg {
+            fill: #ffffff;
+            width: 100%;
+            height: 100%;
+        }
+
+        .panel-right {
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .datetime-widget {
+            text-align: right;
+            line-height: 1.3;
+        }
+
+        .time {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .date {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        /* Desktop Area */
+        .desktop-area {
+            flex: 1;
+            position: relative;
+        }
+
+        /* Context Menu */
+        .context-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(40, 40, 40, 0.98);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 220px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 500;
+        }
+
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+        .context-menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .context-menu-item svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .context-menu-separator {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 6px 0;
+        }
+
+        /* Application Window */
+        .app-window {
+            position: absolute;
+            top: 15%;
+            left: 25%;
+            width: 50%;
+            height: 55%;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            z-index: 400;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-bar {
+            height: 44px;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .window-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-control {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: transparent;
+            border: none;
+        }
+
+        .window-control:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .window-control svg {
+            width: 16px;
+            height: 16px;
+            fill: #495057;
+        }
+
+        .window-content {
+            flex: 1;
+            background: #ffffff;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .content-placeholder {
+            flex: 1;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            font-size: 14px;
+        }
+
+        /* Icons */
+        .icon-blue { fill: #4dabf7; }
+        .icon-green { fill: #51cf66; }
+        .icon-orange { fill: #ffa94d; }
+        .icon-red { fill: #ff6b6b; }
+        .icon-purple { fill: #da77f2; }
+        .icon-gray { fill: #adb5bd; }
+
+    </style>
+</head>
+<body>
+    <div class="desktop">
+        <!-- Top Panel -->
+        <div class="top-panel">
+            <div class="panel-left">
+                <div class="power-button" title="Power/Shutdown">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="panel-right">
+                <div class="datetime-widget">
+                    <div class="time" id="time">14:32</div>
+                    <div class="date" id="date">Mon, Dec 16</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop Area -->
+        <div class="desktop-area">
+            <!-- Application Window -->
+            <div class="app-window">
+                <div class="title-bar">
+                    <div class="window-title">Terminal</div>
+                    <div class="window-controls">
+                        <button class="window-control" title="Close">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2L2 22h20L12 2zm0 3.5L18.5 20h-13L12 5.5z"/>
+                            </svg>
+                        </button>
+                        <button class="window-control" title="Maximize">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 22L22 12L12 2L2 12L12 22zm0-2.5L4.5 12L12 4.5L19.5 12L12 19.5z"/>
+                            </svg>
+                        </button>
+                        <button class="window-control" title="Minimize">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 12l16 0M4 12l6-6M4 12l6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <div class="content-placeholder">
+                        Application Content Area
+                    </div>
+                </div>
+            </div>
+
+            <!-- Context Menu -->
+            <div class="context-menu">
+                <div class="context-menu-item">
+                    <svg viewBox="0 0 24 24" class="icon-blue">
+                        <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+                    </svg>
+                    <span>Files</span>
+                </div>
+                <div class="context-menu-item">
+                    <svg viewBox="0 0 24 24" class="icon-green">
+                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                    <span>Messages</span>
+                </div>
+                <div class="context-menu-item">
+                    <svg viewBox="0 0 24 24" class="icon-orange">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                    <span>Web Browser</span>
+                </div>
+                <div class="context-menu-item">
+                    <svg viewBox="0 0 24 24" class="icon-purple">
+                        <path d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H4V5h16v14zM6 15h12v-2H6v2zm0-4h12V9H6v2zm0-4h12V5H6v2z"/>
+                    </svg>
+                    <span>Settings</span>
+                </div>
+                <div class="context-menu-separator"></div>
+                <div class="context-menu-item">
+                    <svg viewBox="0 0 24 24" class="icon-red">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                    <span>About</span>
+                </div>
+                <div class="context-menu-item">
+                    <svg viewBox="0 0 24 24" class="icon-gray">
+                        <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                    </svg>
+                    <span>System Preferences</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update time and date
+        function updateDateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}`;
+            
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', options);
+        }
+        
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>
